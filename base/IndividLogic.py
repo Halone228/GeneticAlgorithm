@@ -2,6 +2,7 @@
 import pygad
 from pprint import pprint
 import numpy
+import types
 
 
 class LogicManager:
