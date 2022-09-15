@@ -86,3 +86,8 @@ class Circle(Shape):
 
     def update(self):
         self.get_keys()
+
+
+class Agent:
+    """Агент - коляска с палкой"""
+    pass
