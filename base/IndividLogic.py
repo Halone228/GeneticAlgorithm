@@ -22,7 +22,7 @@ class LogicManager:
     mutation_type = "random"
     mutation_percent_genes = 10
 
-    def __init__(self, input_len: int, on_fitness: function, fitness_function: function):
+    def __init__(self, input_len: int, on_fitness, fitness_function):
         """on_fitness=None: Accepts a function to be called after calculating the fitness values of all solutions in
         the population. This function must accept 2 parameters: the first one represents the instance of the genetic
         algorithm and the second one is a list of all solutions’ fitness values. Added in PyGAD 2.6.0.
