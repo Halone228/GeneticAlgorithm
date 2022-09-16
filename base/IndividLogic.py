@@ -6,18 +6,18 @@ import types
 
 
 class LogicManager:
-    num_generations = 100
+    num_generations = 400
     num_parents_mating = 2
 
     sol_per_pop = 8
 
     init_range_low = -2
-    init_range_high = 5
+    init_range_high = 15
 
     parent_selection_type = "rws"
     keep_parents = 1
 
-    crossover_type = "single_point"
+    crossover_type = "uniform"
 
     mutation_type = "random"
     mutation_percent_genes = 10
@@ -29,7 +29,7 @@ class LogicManager:
         CHECK https://pygad.readthedocs.io/en/latest/README_pygad_ReadTheDocs.html#life-cycle-of-pygad"""
         self.on_fitness = on_fitness
         self.fitness_function = fitness_function
-        self.num_gens = input_len
+        self.num_genes = input_len
         self.ga_instance = pygad.GA(num_generations=self.num_generations,
                                     num_parents_mating=self.num_parents_mating,
                                     fitness_func=self.fitness_function,
@@ -42,8 +42,11 @@ class LogicManager:
                                     crossover_type=self.crossover_type,
                                     mutation_type=self.mutation_type,
                                     mutation_percent_genes=self.mutation_percent_genes,
+                                    mutation_num_genes=1,
                                     gene_type=float,
                                     on_fitness=self.on_fitness)
 
     def start(self):
         self.ga_instance.run()
+        print(self.ga_instance.population)
+        print(self.ga_instance.best_solutions)
