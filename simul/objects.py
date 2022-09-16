@@ -89,5 +89,50 @@ class Circle(Shape):
 
 
 class Agent:
-    """Агент - коляска с палкой"""
-    pass
+
+    def __init__(self,space: Space):
+        self.__init_body__(position)
+        space.add_to_space(
+                self.rect_body,self.rect_shape,
+                self.forward_wheel_body,self.forward_wheel_shape
+                self.forward_string,
+                self.back_wheel_body,self.back_wheel_shape,
+                self.back_string
+            )
+
+    def __init_body__(self,
+                    position: Vec2d):
+        self.rect_body = Body()
+        self.body.position
+        self.rect_shape = Poly.create_box(self.rect_body,(100,40))
+        self.rect_shape.mass = 5
+        self.rect_shape.friction = 0.5
+        verticels = self.rect_body.get_vertices()
+        ##CREATE FORWARD WHEEL
+        self.forward_wheel_body = Body() 
+        self.forward_wheel_body.position = verticels[0] - Vec2d(0,40)
+        self.forward_wheel_shape = _T_circle(self.forward_wheel_body, 10)
+        self.forward_wheel_shape.mass = 1
+        self.forward_string = DampedRotaryString(
+            self.rect_body,
+            self.forward_wheel_body,
+            0,
+            .5,
+            .5
+        )
+        self.forward_string.collide_bodies = False
+        ##END OF CREATE FORWARD WHEEL
+        ##CREATE BACK WHEEL
+        self.back_wheel_body = Body()
+        self.back_wheel_body.position = verticels[-1] - Vec2d(0,40)
+        self.back_wheel_shape = _T_circle(self.back_wheel_body, 10)
+        self.back_wheel_shape.mass = 1
+        self.back_string = DampedRotaryString(
+            self.rect_body,
+            self.back_wheel_body,
+            0,
+            .5,
+            .5
+        )
+
+

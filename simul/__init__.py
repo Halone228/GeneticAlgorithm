@@ -3,6 +3,8 @@ import pymunk
 from pymunk.pygame_util import DrawOptions
 from pymunk.bb import Vec2d
 from objects import *
+from pymunk.constraints import *
+
 
 
 class App:
@@ -32,6 +34,7 @@ class App:
         circle.add_to_space(self.space)
         self.objects.append(ground)
         self.objects.append(circle)
+        Agent(self.space)
 
     def draw(self):
         self.window.fill((0, 0, 0))
@@ -40,6 +43,9 @@ class App:
 
     def iter(self):
         self.space.step(self.__DELTA_TIME)
+        keys = pg.key.get_pressed()
+        if keys[pg.K_h]:
+            create_car(self.space,300, 200, 5)
         for object in self.objects:
             object.update()
         for event in pg.event.get():
