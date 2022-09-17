@@ -1,9 +1,10 @@
-from objects import Agent
+from turtle import pos
+from .objects import Agent
 from base import LogicManager
 from numpy import array
 from pymunk import Space
 from pymunk.bb import Vec2d
-from settings import *
+from .settings import *
 from pygad import GA
 
 
@@ -26,14 +27,14 @@ class SoloManager:
 
     def step(self):
         if not self.is_died:
-            inputs = array([self.agent.angel*10, self.agent.velocity_x/80.])
-            force = Vec2d(sum(inputs * self.weights), 0)*10
-            print(force)
+            position = (self.agent.position-WIDTH/2)/(WIDTH/4)
+            inputs = array([self.agent.angel*13, self.agent.velocity_x/80.,position])
+            force = Vec2d(sum(inputs * self.weights), 0)*50
             self.agent.down_rect.velocity = force
             self.fitness += 1/FPS
             self.is_died_func()
-            if self.fitness > 10:
-                is_died = True
+            if self.fitness > 1000:
+                self.is_died = True
 
 
 class AgentManager:
@@ -44,7 +45,7 @@ class AgentManager:
                  app):
         self.app = app
         self.space = app.space
-        self.ga = LogicManager(2,self.on_fitness,self.fitness_func)
+        self.ga = LogicManager(3,self.on_fitness,self.fitness_func)
         global objects
         objects = [1 for _ in range(len(self.ga.ga_instance.population))]
         global manager

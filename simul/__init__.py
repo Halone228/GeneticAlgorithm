@@ -2,9 +2,11 @@ import pygame as pg
 import pymunk
 from pymunk.pygame_util import DrawOptions
 from pymunk.bb import Vec2d
-from objects import *
+
+from simul.settings import HEIGHT, WIDTH
+from .objects import *
 from pymunk.constraints import *
-from AgentManager import AgentManager
+from .AgentManager import AgentManager
 
 
 
@@ -47,15 +49,13 @@ class App:
     def iter(self):
         self.space.step(self.__DELTA_TIME)
         keys = pg.key.get_pressed()
-        if keys[pg.K_h]:
-            create_car(self.space,300, 200, 5)
         for object in self.objects:
             object.update()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
         self.draw()
-        self.clock.tick(self.fps*100)
+        self.clock.tick(self.fps*2)
 
 
     ###############
@@ -66,6 +66,10 @@ class App:
             # self.iter()
 
 
+
+def start():
+    app = App(WIDTH,HEIGHT,60)
+    app.run()
 
 
 if __name__=='__main__':

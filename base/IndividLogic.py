@@ -9,13 +9,13 @@ class LogicManager:
     num_generations = 400
     num_parents_mating = 2
 
-    sol_per_pop = 8
+    sol_per_pop = 20
 
-    init_range_low = -2
-    init_range_high = 15
+    init_range_low = 10
+    init_range_high = 100
 
     parent_selection_type = "rws"
-    keep_parents = 1
+    keep_parents = 2
 
     crossover_type = "uniform"
 
@@ -49,4 +49,4 @@ class LogicManager:
     def start(self):
         self.ga_instance.run()
         print(self.ga_instance.population)
-        print(self.ga_instance.best_solutions)
+        print(self.ga_instance)

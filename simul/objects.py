@@ -12,7 +12,7 @@ from pygame import key
 import pygame as pg
 from pymunk.constraints import *
 import random
-from settings import AGENT_POS
+from .settings import AGENT_POS
 
 _T_num = float|int
 
@@ -58,7 +58,7 @@ class Rect(Shape):
                  w: int,
                  h: int,
                  mass: float = 20,
-                 friction: float = 0,
+                 friction: float = 1,
                  color: tuple = (174,160,140),
                  is_dynamic: bool = True):
         super().__init__(Vec2d(position.x+w//2,position.y-h//2),mass,friction,color,
@@ -107,22 +107,22 @@ class Agent:
                 self.up_rect,self.up_shape
             )
         self.space = space
-        self.down_rect.apply_impulse_at_local_point(Vec2d(random.randint(-50,50)+random.random(),0))
+        self.up_rect.apply_impulse_at_local_point(Vec2d(random.random(),0))
         filter = pymunk.ShapeFilter(group=1)
         self.down_shape.filter = filter
         self.up_shape.filter = filter
 
     def __init_body__(self,
                       position: Vec2d):
-        self.down_rect = Body()
+        self.down_rect = Body(body_type=Body.KINEMATIC)
         self.down_rect.position = position
         self.down_shape = _T_poly.create_box(self.down_rect,(100,40))
-        self.down_shape.mass = 1
+        self.down_shape.friction = 0.5
         self.up_rect = Body()
         up_rect_height = 150
         self.up_shape = _T_poly.create_box(self.up_rect,(10,up_rect_height))
         self.up_rect.position = position + Vec2d(0,-up_rect_height//2)
-        self.up_shape.mass = 1
+        self.up_shape.mass = 0.01
         self.joint = PivotJoint(self.down_rect, self.up_rect,
                                 position)
 
@@ -142,6 +142,10 @@ class Agent:
     @property
     def velocity_x(self):
         return self.down_rect.velocity.x
+
+    @property
+    def position(self):
+        return self.down_rect.position.x
 
     def __del__(self):
         self.space.remove(self.down_rect,self.down_shape,self.up_rect,self.up_shape,self.joint)
