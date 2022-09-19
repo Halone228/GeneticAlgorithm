@@ -28,7 +28,7 @@ class SoloManager:
     def step(self):
         if not self.is_died:
             position = (self.agent.position-WIDTH/2)/(WIDTH/4)
-            inputs = array([self.agent.angel*13, self.agent.velocity_x/80.,position])
+            inputs = array([self.agent.angel*2.3, position])
             force = Vec2d(sum(inputs * self.weights), 0)*50
             self.agent.down_rect.velocity = force
             self.fitness += 1/FPS
@@ -45,7 +45,7 @@ class AgentManager:
                  app):
         self.app = app
         self.space = app.space
-        self.ga = LogicManager(3,self.on_fitness,self.fitness_func)
+        self.ga = LogicManager(2,self.on_fitness,self.fitness_func)
         global objects
         objects = [1 for _ in range(len(self.ga.ga_instance.population))]
         global manager
@@ -58,6 +58,8 @@ class AgentManager:
             manager.app.iter()
             for obj in objects:
                 obj.step()
+        manager.app.generation += 1
+
 
     @staticmethod
     def fitness_func(_,num):

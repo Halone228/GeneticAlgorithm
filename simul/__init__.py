@@ -14,11 +14,16 @@ class App:
 
     is_running = True
     objects = []
+    __speed = 1
+    k_left: bool = False
+    k_right: bool = False
 
     def __init__(self,
                  w: int,
                  h: int,
                  fps: int):
+        pg.font.init()
+        self.work_font: pg.font.Font = pg.font.SysFont('Comic Sans MS', 30)
         self.window = pg.display.set_mode(
             (w,h)
         )
@@ -33,6 +38,23 @@ class App:
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
         self.__init_objects__()
         self.manager = AgentManager(self)
+        self.generation = 0
+    @property
+    def speed(self):
+        return self.__speed
+
+    @speed.setter
+    def speed(self,value):
+        if value < 1:
+            self.__speed = 1
+        else:
+            self.__speed = value
+
+    def build_texts(self):
+        generation = self.work_font.render(f"Generation: {self.generation}",False,(255,255,255))
+        self.window.blit(generation,(50,50))
+        speed = self.work_font.render(f"Speed: x{self.speed}",False,(255,255,255))
+        self.window.blit(speed,(500,50))
 
     def __init_objects__(self):
         ground = Rect(Vec2d(.0,float(self.height)),self.width,100,is_dynamic=False,friction=0.1)
@@ -44,6 +66,7 @@ class App:
     def draw(self):
         self.window.fill((0, 0, 0))
         self.space.debug_draw(self.options)
+        self.build_texts()
         pg.display.flip()
 
     def iter(self):
@@ -53,9 +76,24 @@ class App:
             object.update()
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self.is_running = False
+                exit()
+        if keys[pg.K_LEFT]:
+            if not self.k_left:
+                self.speed -= 1
+                self.k_left = True
+        else:
+            self.k_left = False
+
+        if keys[pg.K_RIGHT]:
+            if not self.k_right:
+                self.speed += 1
+                self.k_right = True
+        else:
+            self.k_right = False
+
+
         self.draw()
-        self.clock.tick(self.fps*2)
+        self.clock.tick(self.fps*self.speed)
 
 
     ###############

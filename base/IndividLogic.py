@@ -9,9 +9,9 @@ class LogicManager:
     num_generations = 400
     num_parents_mating = 2
 
-    sol_per_pop = 20
+    sol_per_pop = 10
 
-    init_range_low = 10
+    init_range_low = -100
     init_range_high = 100
 
     parent_selection_type = "rws"
@@ -44,7 +44,12 @@ class LogicManager:
                                     mutation_percent_genes=self.mutation_percent_genes,
                                     mutation_num_genes=1,
                                     gene_type=float,
-                                    on_fitness=self.on_fitness)
+                                    on_fitness=self.on_fitness,
+                                    mutation_by_replacement=True,
+                                    allow_duplicate_genes=True,
+                                    keep_elitism=5,
+                                    random_mutation_min_val=-.5,
+                                    random_mutation_max_val=.5)
 
     def start(self):
         self.ga_instance.run()

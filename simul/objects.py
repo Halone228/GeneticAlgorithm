@@ -107,7 +107,7 @@ class Agent:
                 self.up_rect,self.up_shape
             )
         self.space = space
-        self.up_rect.apply_impulse_at_local_point(Vec2d(random.random(),0))
+        self.up_rect.apply_impulse_at_local_point(Vec2d(random.random()/1000,0))
         filter = pymunk.ShapeFilter(group=1)
         self.down_shape.filter = filter
         self.up_shape.filter = filter
@@ -119,10 +119,10 @@ class Agent:
         self.down_shape = _T_poly.create_box(self.down_rect,(100,40))
         self.down_shape.friction = 0.5
         self.up_rect = Body()
-        up_rect_height = 150
+        up_rect_height = 500
         self.up_shape = _T_poly.create_box(self.up_rect,(10,up_rect_height))
         self.up_rect.position = position + Vec2d(0,-up_rect_height//2)
-        self.up_shape.mass = 0.01
+        self.up_shape.mass = 0.00001
         self.joint = PivotJoint(self.down_rect, self.up_rect,
                                 position)
 
