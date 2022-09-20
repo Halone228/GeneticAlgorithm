@@ -55,3 +55,4 @@ class LogicManager:
         self.ga_instance.run()
         print(self.ga_instance.population)
         print(self.ga_instance)
+        self.ga_instance.save('new_weights')

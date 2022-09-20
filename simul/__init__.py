@@ -7,11 +7,10 @@ from simul.settings import HEIGHT, WIDTH
 from .objects import *
 from pymunk.constraints import *
 from .AgentManager import AgentManager
-
+from .models import Equilibrium
 
 
 class App:
-
     is_running = True
     objects = []
     __speed = 1
@@ -37,14 +36,15 @@ class App:
         self.__DELTA_TIME = 1.0/float(fps)
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
         self.__init_objects__()
-        self.manager = AgentManager(self)
+        self.manager = AgentManager(self, Equilibrium)
         self.generation = 0
+
     @property
     def speed(self):
         return self.__speed
 
     @speed.setter
-    def speed(self,value):
+    def speed(self, value):
         if value < 1:
             self.__speed = 1
         else:

@@ -118,13 +118,16 @@ class Agent:
         self.down_rect.position = position
         self.down_shape = _T_poly.create_box(self.down_rect,(100,40))
         self.down_shape.friction = 0.5
+        self.down_shape.color = Color(102, 102, 153)
         self.up_rect = Body()
         up_rect_height = 500
         self.up_shape = _T_poly.create_box(self.up_rect,(10,up_rect_height))
         self.up_rect.position = position + Vec2d(0,-up_rect_height//2)
         self.up_shape.mass = 0.00001
+        self.up_shape.color = Color(102, 51, 0)
         self.joint = PivotJoint(self.down_rect, self.up_rect,
                                 position)
+        self.joint.color = Color(0, 102, 255)
 
     def update(self):
         keys = pg.key.get_pressed()
