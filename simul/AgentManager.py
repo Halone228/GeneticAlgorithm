@@ -1,6 +1,5 @@
 from turtle import pos
 from .objects import Agent
-from base import LogicManager
 from numpy import array
 from pymunk import Space
 from pymunk.bb import Vec2d

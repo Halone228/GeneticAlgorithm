@@ -64,8 +64,6 @@ class App:
     def iter(self):
         self.space.step(self.__DELTA_TIME)
         keys = pg.key.get_pressed()
-        for object in self.objects:
-            object.update()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 exit()
