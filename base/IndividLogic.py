@@ -6,21 +6,6 @@ import types
 
 
 class LogicManager:
-    num_generations = 400
-    num_parents_mating = 2
-
-    sol_per_pop = 10
-
-    init_range_low = -100
-    init_range_high = 100
-
-    parent_selection_type = "rws"
-    keep_parents = 2
-
-    crossover_type = "uniform"
-
-    mutation_type = "random"
-    mutation_percent_genes = 10
 
     def __init__(self, input_len: int, on_fitness, fitness_function):
         """on_fitness=None: Accepts a function to be called after calculating the fitness values of all solutions in

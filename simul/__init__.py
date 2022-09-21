@@ -7,7 +7,7 @@ from simul.settings import HEIGHT, WIDTH
 from .objects import *
 from pymunk.constraints import *
 from .AgentManager import AgentManager
-from .models import Equilibrium
+from .models import Equilibrium,EquilibriumGA
 
 
 class App:
@@ -35,7 +35,7 @@ class App:
         self.clock = pg.time.Clock()
         self.__DELTA_TIME = 1.0/float(fps)
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
-        self.manager = AgentManager(self, Equilibrium)
+        self.manager = AgentManager(self, (Equilibrium, EquilibriumGA))
         self.generation = 0
 
     @property
@@ -91,7 +91,7 @@ class App:
     ###############
 
     def run(self):
-        self.manager.ga.start()
+        self.manager.start()
         #while self.is_running:
             # self.iter()
 
