@@ -24,6 +24,7 @@ class AgentManager:
         self.space = app.space
         self.ga = LogicManager(model.inputs,self.on_fitness,self.fitness_func)
         self.model = model
+        model.init_environmental(self.space)
         self.objects = [1 for _ in range(len(self.ga.ga_instance.population))]
         global manager
         manager = self

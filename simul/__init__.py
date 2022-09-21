@@ -35,7 +35,6 @@ class App:
         self.clock = pg.time.Clock()
         self.__DELTA_TIME = 1.0/float(fps)
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
-        self.__init_objects__()
         self.manager = AgentManager(self, Equilibrium)
         self.generation = 0
 
@@ -55,13 +54,6 @@ class App:
         self.window.blit(generation,(50,50))
         speed = self.work_font.render(f"Speed: x{self.speed}",False,(255,255,255))
         self.window.blit(speed,(500,50))
-
-    def __init_objects__(self):
-        ground = Rect(Vec2d(.0,float(self.height)),self.width,100,is_dynamic=False,friction=0.1)
-        ground.add_to_space(self.space)
-        self.objects.append(ground)
-        # agent = Agent(self.space,self.agent_pos)
-        # self.objects.append(agent)
 
     def draw(self):
         self.window.fill((0, 0, 0))

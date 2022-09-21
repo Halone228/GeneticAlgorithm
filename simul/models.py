@@ -1,9 +1,10 @@
-from abc import ABCMeta, abstractproperty,abstractmethod
+from abc import ABCMeta, abstractproperty,abstractmethod,abstractstaticmethod
 from .objects import Agent as default_Agent
 from numpy import array
 from pymunk import Space
 from .settings import *
 import math
+from .objects import *
 
 
 class AbstractAgentModel(metaclass=ABCMeta):
@@ -22,6 +23,9 @@ class AbstractAgentModel(metaclass=ABCMeta):
 
     @abstractmethod
     def step(self): ...
+
+    @abstractstaticmethod
+    def init_environmental(self): ...
 
     def __init__(self,
                  num: int,
@@ -58,3 +62,8 @@ class Equilibrium(AbstractAgentModel):
             self.died_func()
             if self.fitness > 1000:
                 self.is_died = True
+
+    @staticmethod
+    def init_environmental(space):
+        ground = Rect(Vec2d(.0, float(HEIGHT)), WIDTH, 100, is_dynamic=False, friction=0.1)
+        ground.add_to_space(space)
