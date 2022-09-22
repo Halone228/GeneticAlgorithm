@@ -49,8 +49,8 @@ class AbstractAgentGA(metaclass=ABCMeta):
     num_generations = 400
     num_parents_mating = 2
     sol_per_pop = 10
-    init_range_low = -100
-    init_range_high = 100
+    init_range_low = -50
+    init_range_high = 50
     parent_selection_type = "rws"
     keep_parents = 2
     crossover_type = "uniform"
@@ -84,7 +84,8 @@ class Equilibrium(AbstractAgentModel):
         self.agent = default_Agent(self.space)
 
     def died_func(self):
-        if abs(self.agent.angel) >= 1 or 0 > self.agent.down_rect.position.x > 720:
+
+        if abs(self.agent.angel) >= 1 or self.agent.position < 0 or self.agent.position > WIDTH:
             self.is_died = True
             del self.agent
 
@@ -92,7 +93,7 @@ class Equilibrium(AbstractAgentModel):
         if not self.is_died:
             position = (self.agent.position - WIDTH / 2) / (WIDTH / 4)
             inputs = array([self.agent.angel * math.pi, position])
-            force = Vec2d(sum(inputs * self.weights), 0) * 50
+            force = Vec2d(sum(inputs * self.weights), 0)
             self.agent.down_rect.velocity = force
             self.fitness += 1 / FPS
             self.died_func()
@@ -109,7 +110,7 @@ class EquilibriumGA(AbstractAgentGA):
 
     def on_fitness(self,gad: pygad.GA, *args):
         self.manager.objects = [self.manager.model(num, weights, self.manager.space) for num, weights in
-                                enumerate(args[0], start=0)]
+                                enumerate(gad.population, start=0)]
         while [obj for obj in self.manager.objects if not obj.is_died]:
             self.manager.app.iter()
             for obj in self.manager.objects:

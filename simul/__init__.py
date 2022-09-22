@@ -16,6 +16,7 @@ class App:
     __speed = 1
     k_left: bool = False
     k_right: bool = False
+    frames_from_draw: int = 1
 
     def __init__(self,
                  w: int,
@@ -56,10 +57,15 @@ class App:
         self.window.blit(speed,(500,50))
 
     def draw(self):
-        self.window.fill((0, 0, 0))
-        self.space.debug_draw(self.options)
-        self.build_texts()
-        pg.display.flip()
+        if self.frames_from_draw % self.speed == 0:
+            self.window.fill((0, 0, 0))
+            self.space.debug_draw(self.options)
+            self.build_texts()
+            pg.display.flip()
+            self.frames_from_draw = 1
+            self.clock.tick(self.fps)
+        else:
+            self.frames_from_draw += 1
 
     def iter(self):
         self.space.step(self.__DELTA_TIME)
@@ -81,9 +87,8 @@ class App:
         else:
             self.k_right = False
 
-
         self.draw()
-        self.clock.tick(self.fps*self.speed)
+
 
 
     ###############
