@@ -1,5 +1,4 @@
 from turtle import pos
-from .objects import Agent
 from numpy import array
 from pymunk import Space
 from pymunk.bb import Vec2d

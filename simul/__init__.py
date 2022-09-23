@@ -87,11 +87,21 @@ class App:
         else:
             self.k_right = False
 
+        if keys[pg.K_a]:
+            self.drone_Agent.left_body.apply_force_at_local_point((0,-150))
+        if keys[pg.K_d]:
+            self.drone_Agent.right_body.apply_force_at_local_point((0,-150))
+
         self.draw()
 
 
 
     ###############
+
+    def test(self):
+        self.drone_Agent = DroneAgent(self.space)
+        while True:
+            self.iter()
 
     def run(self):
         self.manager.start()
@@ -99,12 +109,11 @@ class App:
             # self.iter()
 
 
-
 def start():
     app = App(WIDTH,HEIGHT,60)
     app.run()
 
 
-if __name__=='__main__':
+def test():
     app = App(720,720,60)
-    app.run()
+    app.test()

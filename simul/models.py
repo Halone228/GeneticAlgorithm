@@ -1,5 +1,8 @@
 from abc import ABCMeta, abstractproperty, abstractmethod
-from .objects import Agent as default_Agent
+
+import numpy
+
+from .objects import EquilibriumAgent as default_Agent
 from numpy import array
 from pymunk import Space
 from .settings import *
@@ -9,6 +12,11 @@ import pygad
 
 
 class AbstractAgentModel(metaclass=ABCMeta):
+    """
+    Model agent handles all processes between environmental and GA.
+    For each model NEED to be implemented.
+
+    """
     agent: any
     is_died: bool = False
 
@@ -44,6 +52,9 @@ class AbstractAgentModel(metaclass=ABCMeta):
 
 
 class AbstractAgentGA(metaclass=ABCMeta):
+    """
+    Abstract object of main GA logic. For each model NEED to be implemented.
+    """
     ga: pygad.GA
     # Class have GA variables, for specific model it can be different
     num_generations = 400
@@ -91,9 +102,9 @@ class Equilibrium(AbstractAgentModel):
 
     def step(self):
         if not self.is_died:
-            position = (self.agent.position - WIDTH / 2) / (WIDTH / 4)
-            inputs = array([self.agent.angel * math.pi, position])
-            force = Vec2d(sum(inputs * self.weights), 0)
+            position = (4*self.agent.position-2*WIDTH)/WIDTH
+            inputs = array([self.agent.angel * numpy.e, position])
+            force = Vec2d(sum(inputs * self.weights), 0)*70
             self.agent.down_rect.velocity = force
             self.fitness += 1 / FPS
             self.died_func()
