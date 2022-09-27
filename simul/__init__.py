@@ -7,7 +7,7 @@ from simul.settings import HEIGHT, WIDTH
 from .objects import *
 from pymunk.constraints import *
 from .AgentManager import AgentManager
-from .models import Equilibrium,EquilibriumGA
+from .models import Equilibrium,EquilibriumGA,Drone,DroneGA
 
 
 class App:
@@ -36,7 +36,7 @@ class App:
         self.clock = pg.time.Clock()
         self.__DELTA_TIME = 1.0/float(fps)
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
-        self.manager = AgentManager(self, (Equilibrium, EquilibriumGA))
+        self.manager = AgentManager(self, (Drone, DroneGA))
         self.generation = 0
 
     @property
@@ -73,6 +73,7 @@ class App:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 exit()
+                del self.space
         if keys[pg.K_LEFT]:
             if not self.k_left:
                 self.speed -= 1
@@ -91,7 +92,6 @@ class App:
             self.drone_Agent.left_body.apply_force_at_local_point((0,-150))
         if keys[pg.K_d]:
             self.drone_Agent.right_body.apply_force_at_local_point((0,-150))
-
         self.draw()
 
 
@@ -115,5 +115,5 @@ def start():
 
 
 def test():
-    app = App(720,720,60)
+    app = App(WIDTH,HEIGHT,60)
     app.test()

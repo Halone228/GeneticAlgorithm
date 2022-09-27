@@ -173,6 +173,7 @@ class DroneAgent(AbstractAgent):
 
     def __init_body__(self,
                       position: Vec2d):
+        # Init bodies
         self.main_body = Body()
         self.main_body.position = position
         self.main_shape = _T_poly.create_box(self.main_body, (60, 20))
@@ -181,15 +182,18 @@ class DroneAgent(AbstractAgent):
         self.left_body.position = position + Vec2d(-60, 15)
         self.left_shape = _T_poly.create_box(self.left_body, (5, 15))
         self.left_shape.mass = 0.5
+        self.left_shape.friction = 1
         self.right_body = Body()
         self.right_body.position = position + Vec2d(60, 15)
         self.right_shape = _T_poly.create_box(self.right_body, (5, 15))
         self.right_shape.mass = 0.5
-        main_verticles = self.main_shape.get_vertices()
-        self.left_joint1 = PinJoint(self.left_body, self.main_body,(0,0),main_verticles[-1])
-        self.right_joint1 = PinJoint(self.right_body, self.main_body,(0,0),main_verticles[0])
-        self.left_joint2 = PinJoint(self.left_body, self.main_body,(0,0),main_verticles[-2])
-        self.right_joint2 = PinJoint(self.right_body, self.main_body,(0,0),main_verticles[1])
+        self.right_shape.friction = 1
+        # Init joints
+        main_vs = self.main_shape.get_vertices()
+        self.left_joint1 = PinJoint(self.left_body, self.main_body, (0, 0), main_vs[-1])
+        self.right_joint1 = PinJoint(self.right_body, self.main_body, (0, 0), main_vs[0])
+        self.left_joint2 = PinJoint(self.left_body, self.main_body, (0, 0), main_vs[-2])
+        self.right_joint2 = PinJoint(self.right_body, self.main_body, (0, 0), main_vs[1])
 
         self.space.add(
             self.left_joint1, self.right_joint1, self.left_joint2, self.right_joint2,
@@ -197,11 +201,10 @@ class DroneAgent(AbstractAgent):
             self.right_body, self.right_shape,
             self.left_body, self.left_shape
         )
-    #
-    #     self.left_joint.collide_bodies, self.right_joint.collide_bodies = False
-    #
-    # def __del__(self):
-    #     self.space.remove(self.left_joint, self.right_joint,
-    #                       self.main_body, self.main_shape,
-    #                       self.right_body, self.right_shape,
-    #                       self.left_body, self.right_shape)
+
+    def __del__(self):
+        self.space.remove(self.left_joint1, self.right_joint1,
+                          self.left_joint2, self.right_joint2,
+                          self.main_body, self.main_shape,
+                          self.right_body, self.right_shape,
+                          self.left_body, self.left_shape)
