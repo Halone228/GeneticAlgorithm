@@ -1,3 +1,5 @@
+import os
+
 import pygame as pg
 import pymunk
 from pymunk.pygame_util import DrawOptions
@@ -10,6 +12,10 @@ from .AgentManager import AgentManager
 from .models import Equilibrium,EquilibriumGA,Drone,DroneGA
 
 
+class NoSuchModel(Exception):
+    pass
+
+
 class App:
     is_running = True
     objects = []
@@ -17,26 +23,38 @@ class App:
     k_left: bool = False
     k_right: bool = False
     frames_from_draw: int = 1
+    models = {
+        'eq_model': (Equilibrium, EquilibriumGA),
+        'drone_model': (Drone, DroneGA)
+    }
 
     def __init__(self,
                  w: int,
                  h: int,
                  fps: int):
-        pg.font.init()
-        self.work_font: pg.font.Font = pg.font.SysFont('Comic Sans MS', 30)
-        self.window = pg.display.set_mode(
-            (w,h)
-        )
-        self.width = w
-        self.height = h
+
         self.space = pymunk.Space()
         self.space.gravity = 0, 98.1
-        self.options = DrawOptions(self.window)
+        self.graphics = os.environ['gs']
+        if not self.graphics:
+            print('Graphics disabled')
+        model = self.models[os.environ.get('model_name')]
+        if model is None:
+            raise NoSuchModel(f"Model {os.environ.get('model_name')} is not exists")
+        if self.graphics:
+            pg.font.init()
+            self.work_font: pg.font.Font = pg.font.SysFont('Comic Sans MS', 30)
+            self.window = pg.display.set_mode(
+                (WIDTH, HEIGHT)
+            )
+            self.options = DrawOptions(self.window)
+        self.width = w
+        self.height = h
         self.fps = fps
         self.clock = pg.time.Clock()
         self.__DELTA_TIME = 1.0/float(fps)
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
-        self.manager = AgentManager(self, (Drone, DroneGA))
+        self.manager = AgentManager(self, model)
         self.generation = 0
 
     @property
@@ -68,35 +86,27 @@ class App:
             self.frames_from_draw += 1
 
     def iter(self):
+        if self.graphics:
+            keys = pg.key.get_pressed()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    exit()
+                    del self.space
+            if keys[pg.K_LEFT]:
+                if not self.k_left:
+                    self.speed -= 10 if keys[pg.K_LSHIFT] else 1
+                    self.k_left = True
+            else:
+                self.k_left = False
+
+            if keys[pg.K_RIGHT]:
+                if not self.k_right:
+                    self.speed += 10 if keys[pg.K_LSHIFT] else 1
+                    self.k_right = True
+            else:
+                self.k_right = False
+            self.draw()
         self.space.step(self.__DELTA_TIME)
-        keys = pg.key.get_pressed()
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                exit()
-                del self.space
-        if keys[pg.K_LEFT]:
-            if not self.k_left:
-                self.speed -= 1
-                self.k_left = True
-        else:
-            self.k_left = False
-
-        if keys[pg.K_RIGHT]:
-            if not self.k_right:
-                self.speed += 1
-                self.k_right = True
-        else:
-            self.k_right = False
-
-        if keys[pg.K_a]:
-            self.drone_Agent.left_body.apply_force_at_local_point((0,-150))
-        if keys[pg.K_d]:
-            self.drone_Agent.right_body.apply_force_at_local_point((0,-150))
-        self.draw()
-
-
-
-    ###############
 
     def test(self):
         self.drone_Agent = DroneAgent(self.space)

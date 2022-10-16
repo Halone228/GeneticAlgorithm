@@ -1,3 +1,4 @@
+import os
 from abc import ABCMeta, abstractproperty, abstractmethod
 
 import numpy
@@ -9,7 +10,9 @@ from .settings import *
 import math
 from .objects import *
 import pygad
-from pygad.nn import sigmoid
+from pygad.nn import sigmoid as activation
+
+from tqdm import tqdm
 
 
 class AbstractAgentModel(metaclass=ABCMeta):
@@ -60,14 +63,14 @@ class AbstractAgentGA(metaclass=ABCMeta):
     # Class have GA variables, for specific model it can be different
     num_generations = 30000
     num_parents_mating = 2
-    sol_per_pop = 10
-    init_range_low = 25
-    init_range_high = 50
+    sol_per_pop = 40
+    init_range_low = -3
+    init_range_high = 3
     parent_selection_type = "rws"
-    keep_parents = 2
+    keep_parents = -1
     crossover_type = "uniform"
     mutation_type = "random"
-    mutation_percent_genes = 25
+    mutation_percent_genes = 15
 
     def on_fitness(self, gad: pygad.GA, *args):
         self.manager.objects = [self.manager.model(num, weights, self.manager.space) for num, weights in
@@ -94,6 +97,10 @@ class AbstractAgentGA(metaclass=ABCMeta):
                  manager):
         self.init_logic()
         self.manager = manager
+        self.tqdm = tqdm(total=self.num_generations)
+
+    def on_generations(self,*args):
+        self.tqdm.update(1)
 
 
 class Equilibrium(AbstractAgentModel):
@@ -111,7 +118,7 @@ class Equilibrium(AbstractAgentModel):
     def step(self):
         if not self.is_died:
             position = (4*self.agent.position-2*WIDTH)/WIDTH
-            inputs = array([self.agent.angel * numpy.e, position])
+            inputs = array([self.agent.angel * numpy.pi, position])
             force = Vec2d(sum(inputs * self.weights), 0)*70
             self.agent.down_rect.velocity = force
             self.fitness += 1 / FPS
@@ -128,6 +135,8 @@ class Equilibrium(AbstractAgentModel):
 class EquilibriumGA(AbstractAgentGA):
 
     def init_logic(self):
+        self.parent_selection_type = 'tournament'
+        self.K_tournament = 10
         self.ga = pygad.GA(num_generations=self.num_generations,
                            num_parents_mating=self.num_parents_mating,
                            fitness_func=self.fitness_func,
@@ -140,14 +149,17 @@ class EquilibriumGA(AbstractAgentGA):
                            crossover_type=self.crossover_type,
                            mutation_type=self.mutation_type,
                            mutation_percent_genes=self.mutation_percent_genes,
+                           K_tournament=self.K_tournament,
                            mutation_num_genes=1,
                            gene_type=float,
                            on_fitness=self.on_fitness,
                            mutation_by_replacement=True,
                            allow_duplicate_genes=True,
-                           keep_elitism=5,
+                           keep_elitism=0,
                            random_mutation_min_val=-.5,
-                           random_mutation_max_val=.5)
+                           random_mutation_max_val=.5,
+                           on_generation=self.on_generations,
+                           save_best_solutions=bool(os.environ.get('save_best')))
 
 
 class Drone(AbstractAgentModel):
@@ -172,13 +184,14 @@ class Drone(AbstractAgentModel):
             outputs = inputs*self.weights
             left_angel = outputs[0]+outputs[1]
             right_angel = outputs[3]-outputs[4]
-            left_force = Vec2d(0,sigmoid(outputs[2])*500)
-            right_force = Vec2d(0,sigmoid(outputs[5])*500)
+            max_force = 3000
+            left_force = Vec2d(0, float(activation(outputs[2]))*max_force)
+            right_force = Vec2d(0, float(activation(outputs[5]))*max_force)
             self.agent.left_body.angle = left_angel
             self.agent.right_body.angle = right_angel
             self.agent.left_body.apply_force_at_local_point(left_force)
             self.agent.right_body.apply_force_at_local_point(right_force)
-            self.fitness += 1/1+abs(self.agent.main_body.velocity.y)
+            self.fitness += 1/1+abs(self.agent.main_body.position.get_distance(Vec2d(WIDTH//2, HEIGHT//2)))
             self.died_func()
 
     def init_environmental(space):
@@ -206,6 +219,8 @@ class DroneGA(AbstractAgentGA):
             mutation_by_replacement=True,
             allow_duplicate_genes=True,
             keep_elitism=5,
-            random_mutation_min_val=-2,
-            random_mutation_max_val=2
+            random_mutation_min_val=-.5,
+            random_mutation_max_val=.5,
+            on_generation=self.on_generations,
+            save_best_solutions=bool(os.environ.get('save_best'))
         )
