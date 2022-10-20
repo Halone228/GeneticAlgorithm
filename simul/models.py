@@ -1,3 +1,4 @@
+import pickle
 from datetime import datetime
 import os
 from abc import ABCMeta, abstractproperty, abstractmethod
@@ -73,6 +74,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     crossover_type = "uniform"
     mutation_type = "random"
     mutation_percent_genes = 8
+    initial_population = None
 
     def on_fitness(self, gad: pygad.GA, *args):
         self.manager.objects = [self.manager.model(num, weights, self.manager.space) for num, weights in
@@ -94,9 +96,11 @@ class AbstractAgentGA(metaclass=ABCMeta):
 
     def start_ga(self):
         self.ga.run()
+        self.save()
 
     def __init__(self,
                  manager):
+        self.load()
         self.init_logic()
         self.manager = manager
         self.tqdm = tqdm(total=self.num_generations)
@@ -105,6 +109,17 @@ class AbstractAgentGA(metaclass=ABCMeta):
         self.tqdm.update(1)
         self.manager.app.update_time()
 
+    def save(self):
+        if os.environ.get('save_path', False):
+            # self.ga.save(str(os.environ['save_path']))
+            with open(os.environ.get('save_path'), 'wb') as f:
+                pickle.dump(self.ga.population[self.ga.best_solution_generation],f)
+
+    def load(self):
+        if os.environ.get('load_path', False):
+            with open(os.environ.get('load_path'), 'rb') as f:
+                loaded_values = pickle.load(f)
+                self.initial_population = loaded_values
 
 
 class Equilibrium(AbstractAgentModel):
