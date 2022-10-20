@@ -5,7 +5,7 @@ import pymunk
 from pymunk.pygame_util import DrawOptions
 from pymunk.bb import Vec2d
 
-from simul.settings import HEIGHT, WIDTH
+from simul.settings import HEIGHT, WIDTH, FPS
 from .objects import *
 from pymunk.constraints import *
 from .AgentManager import AgentManager
@@ -61,8 +61,8 @@ class App:
         self.manager = AgentManager(self, model)
         self.generation = 0
         #time
-        self._genStartTime = datetime.now()
-        self._maxDeltaTime = timedelta(0)
+        self.genStartTime = 0
+        self.maxDeltaTime = 0
 
     @property
     def speed(self):
@@ -80,23 +80,22 @@ class App:
         self.window.blit(generation,(50,50))
         speed = self.work_font.render(f"Speed: x{self.speed}",False,(255,255,255))
         self.window.blit(speed,(500,50))
+        time_text = self.work_font.render(f"current:{self.genStartTime:.2f} max:{self.maxDeltaTime:.2f}", False, (255, 254, 254, .7))
+        self.window.blit(time_text, (50, 670))
 
     #time
-    def drawTime(self):
-        _genStartTime = self._genStartTime
-        _maxDeltaTime = self._maxDeltaTime
-        _timeNow = datetime.now()
-        _timeDelta = _timeNow - _genStartTime
-        _timeToDraw = self.work_font.render(f"current:{_timeDelta.seconds} max:{_maxDeltaTime.seconds}",False,(255,254,254, .7))
-        self.window.blit(_timeToDraw,(50,670))
+    def time_step(self):
+        self.genStartTime += 1/FPS
+
+    def update_time(self):
+        self.maxDeltaTime = self.maxDeltaTime if self.maxDeltaTime>self.genStartTime else self.genStartTime
+        self.genStartTime = 0
 
     def draw(self):
         if self.frames_from_draw % self.speed == 0:
             self.window.fill((0, 0, 0))
             self.space.debug_draw(self.options)
             self.build_texts()
-            #time
-            self.drawTime()
             pg.display.flip()
             self.frames_from_draw = 1
             self.clock.tick(self.fps)
@@ -123,8 +122,10 @@ class App:
                     self.k_right = True
             else:
                 self.k_right = False
+            self.time_step()
             self.draw()
         self.space.step(self.__DELTA_TIME)
+
 
     def test(self):
         self.drone_Agent = DroneAgent(self.space)

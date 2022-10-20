@@ -82,11 +82,6 @@ class AbstractAgentGA(metaclass=ABCMeta):
             for obj in self.manager.objects:
                 obj.step()
         self.manager.app.generation += 1
-        #time
-        _timeNow = datetime.now()
-        _timeDelta = _timeNow - self.manager.app._genStartTime
-        self.manager.app._maxDeltaTime = max(_timeDelta, self.manager.app._maxDeltaTime)
-        self.manager.app._genStartTime = datetime.now()
 
     def fitness_func(self, _, *args):
         try:
@@ -108,6 +103,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
 
     def on_generations(self,*args):
         self.tqdm.update(1)
+        self.manager.app.update_time()
 
 
 class Equilibrium(AbstractAgentModel):
@@ -177,7 +173,7 @@ class Drone(AbstractAgentModel):
 
     def died_func(self):
         pos = self.agent.main_body.position
-        pos = Vec2d(pos.x//WIDTH, pos.y//HEIGHT)
+        pos = Vec2d(pos.x // WIDTH, pos.y // HEIGHT)
         self.is_died = (pos.x != 0 or pos.y != 0)
 
     def step(self):
@@ -202,7 +198,7 @@ class Drone(AbstractAgentModel):
             self.fitness += 1/FPS
             self.died_func()
 
-    def init_environmental(space):
+    def init_environmental(self):
         pass
 
 
