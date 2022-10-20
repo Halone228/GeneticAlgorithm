@@ -11,6 +11,10 @@ from pymunk.constraints import *
 from .AgentManager import AgentManager
 from .models import Equilibrium,EquilibriumGA,Drone,DroneGA
 
+#time
+from datetime import datetime
+from datetime import timedelta
+
 
 class NoSuchModel(Exception):
     pass
@@ -56,6 +60,9 @@ class App:
         self.agent_pos = Vec2d(self.width // 2, self.height - 120)
         self.manager = AgentManager(self, model)
         self.generation = 0
+        #time
+        self._genStartTime = datetime.now()
+        self._maxDeltaTime = timedelta(0)
 
     @property
     def speed(self):
@@ -74,11 +81,22 @@ class App:
         speed = self.work_font.render(f"Speed: x{self.speed}",False,(255,255,255))
         self.window.blit(speed,(500,50))
 
+    #time
+    def drawTime(self):
+        _genStartTime = self._genStartTime
+        _maxDeltaTime = self._maxDeltaTime
+        _timeNow = datetime.now()
+        _timeDelta = _timeNow - _genStartTime
+        _timeToDraw = self.work_font.render(f"current:{_timeDelta.seconds} max:{_maxDeltaTime.seconds}",False,(255,254,254, .7))
+        self.window.blit(_timeToDraw,(50,670))
+
     def draw(self):
         if self.frames_from_draw % self.speed == 0:
             self.window.fill((0, 0, 0))
             self.space.debug_draw(self.options)
             self.build_texts()
+            #time
+            self.drawTime()
             pg.display.flip()
             self.frames_from_draw = 1
             self.clock.tick(self.fps)

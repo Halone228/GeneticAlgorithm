@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from abc import ABCMeta, abstractproperty, abstractmethod
 
@@ -21,7 +22,6 @@ class AbstractAgentModel(metaclass=ABCMeta):
     """
     Model agent handles all processes between environmental and GA.
     For each model NEED to be implemented.
-
     """
     agent: any
     is_died: bool = False
@@ -69,7 +69,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     init_range_low = -3
     init_range_high = 3
     parent_selection_type = "rws"
-    keep_parents = -1
+    keep_parents = 1
     crossover_type = "uniform"
     mutation_type = "random"
     mutation_percent_genes = 8
@@ -82,6 +82,11 @@ class AbstractAgentGA(metaclass=ABCMeta):
             for obj in self.manager.objects:
                 obj.step()
         self.manager.app.generation += 1
+        #time
+        _timeNow = datetime.now()
+        _timeDelta = _timeNow - self.manager.app._genStartTime
+        self.manager.app._maxDeltaTime = max(_timeDelta, self.manager.app._maxDeltaTime)
+        self.manager.app._genStartTime = datetime.now()
 
     def fitness_func(self, _, *args):
         try:
