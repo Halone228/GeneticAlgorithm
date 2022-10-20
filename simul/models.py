@@ -106,6 +106,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
         self.manager.app.update_time()
 
 
+
 class Equilibrium(AbstractAgentModel):
     inputs = 2
 
