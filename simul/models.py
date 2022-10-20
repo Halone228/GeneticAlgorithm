@@ -10,7 +10,9 @@ from .settings import *
 import math
 from .objects import *
 import pygad
-from pygad.nn import sigmoid as activation
+# from pygad.nn import sigmoid as activation
+def activation(n):
+    return 1/(1+numpy.exp(-n))
 
 from tqdm import tqdm
 
@@ -62,7 +64,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     ga: pygad.GA
     # Class have GA variables, for specific model it can be different
     num_generations = 30000
-    num_parents_mating = 2
+    num_parents_mating = 5
     sol_per_pop = 40
     init_range_low = -3
     init_range_high = 3
@@ -70,7 +72,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     keep_parents = -1
     crossover_type = "uniform"
     mutation_type = "random"
-    mutation_percent_genes = 15
+    mutation_percent_genes = 8
 
     def on_fitness(self, gad: pygad.GA, *args):
         self.manager.objects = [self.manager.model(num, weights, self.manager.space) for num, weights in
@@ -175,23 +177,24 @@ class Drone(AbstractAgentModel):
 
     def step(self):
         if not self.is_died:
-            inputs = array([self.agent.left_body.angle,
-                            self.agent.main_body.angle,
-                            self.agent.left_body.velocity.y,
-                            self.agent.right_body.angle,
-                            self.agent.main_body.angle,
-                            self.agent.right_body.velocity.y])
+            inputs = array([float(self.agent.left_body.angle),
+                            float(self.agent.main_body.angle),
+                            float(self.agent.left_body.velocity.y),
+                            float(self.agent.right_body.angle),
+                            float(self.agent.main_body.angle),
+                            float(self.agent.right_body.velocity.y)])
             outputs = inputs*self.weights
             left_angel = outputs[0]+outputs[1]
             right_angel = outputs[3]-outputs[4]
-            max_force = 3000
-            left_force = Vec2d(0, float(activation(outputs[2]))*max_force)
-            right_force = Vec2d(0, float(activation(outputs[5]))*max_force)
-            self.agent.left_body.angle = left_angel
-            self.agent.right_body.angle = right_angel
+            max_force = -3000
+            left_force = Vec2d(0, numpy.nan_to_num(activation(outputs[2])*max_force))
+            right_force = Vec2d(0, numpy.nan_to_num(activation(outputs[5])*max_force))
+            # print(f'R:{right_force}::L:{left_force}')
+            self.agent.left_body.angle = numpy.nan_to_num(left_angel)
+            self.agent.right_body.angle = numpy.nan_to_num(right_angel)
             self.agent.left_body.apply_force_at_local_point(left_force)
             self.agent.right_body.apply_force_at_local_point(right_force)
-            self.fitness += 1/1+abs(self.agent.main_body.position.get_distance(Vec2d(WIDTH//2, HEIGHT//2)))
+            self.fitness += 1/FPS
             self.died_func()
 
     def init_environmental(space):
@@ -200,6 +203,8 @@ class Drone(AbstractAgentModel):
 
 class DroneGA(AbstractAgentGA):
     def init_logic(self):
+        self.init_range_low = 0.5
+        self.init_range_high = 10
         self.ga = pygad.GA(
             num_generations=self.num_generations,
             num_parents_mating=self.num_parents_mating,
