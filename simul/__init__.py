@@ -6,7 +6,6 @@ from pymunk.pygame_util import DrawOptions
 from pymunk.bb import Vec2d
 
 from simul.settings import HEIGHT, WIDTH, FPS
-from .objects import *
 from pymunk.constraints import *
 from .AgentManager import AgentManager
 from .models import Equilibrium,EquilibriumGA,Drone,DroneGA

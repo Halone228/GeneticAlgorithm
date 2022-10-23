@@ -12,84 +12,10 @@ from pygame import key
 import pygame as pg
 from pymunk.constraints import *
 import random
-from .settings import AGENT_POS
+from simul.settings import AGENT_POS
 from abc import ABCMeta, abstractmethod
 
 _T_num = float | int
-
-
-class Shape:
-    shape: _T_shape
-    body: Body
-
-    def __init__(self,
-                 position: Vec2d,
-                 mass: _T_num = 20.0,
-                 friction: _T_num = 0,
-                 color: tuple = (174, 160, 140),
-                 body_type=Body.DYNAMIC):
-        self.body = Body()
-        self.mass = mass
-        self.body.position = position
-        self.pos = position
-        self.friction = friction
-        self.color = color
-        self.body.body_type = body_type
-
-    def __init_defaults__(self):
-        try:
-            self.shape
-        except NameError:
-            raise ValueError("Shape not defined")
-
-        self.shape.friction = self.friction
-        self.shape.color = Color(*self.color)
-        self.shape.mass = self.mass
-
-    def add_to_space(self, space: Space):
-        space.add(self.body, self.shape)
-
-    def update(self):
-        pass
-
-
-class Rect(Shape):
-    def __init__(self,
-                 position: Vec2d,
-                 w: int,
-                 h: int,
-                 mass: float = 20,
-                 friction: float = 1,
-                 color: tuple = (174, 160, 140),
-                 is_dynamic: bool = True):
-        super().__init__(Vec2d(position.x + w // 2, position.y - h // 2), mass, friction, color,
-                         Body.DYNAMIC if is_dynamic else Body.KINEMATIC)
-        self.shape = _T_poly.create_box(self.body, (w, h))
-        self.__init_defaults__()
-
-
-class Circle(Shape):
-    def __init__(self,
-                 position: Vec2d,
-                 radius: _T_num,
-                 mass: _T_num = 20,
-                 friction: _T_num = 0,
-                 color: tuple = (174, 160, 140),
-                 is_dynamic: bool = True):
-        super().__init__(position, mass, friction, color, Body.DYNAMIC if is_dynamic else Body.KINEMATIC)
-        self.radius = radius
-        self.shape = _T_circle(self.body, radius)
-        self.__init_defaults__()
-
-    def get_keys(self):
-        keys = key.get_pressed()
-        if keys[pg.K_d]:
-            self.shape.body.apply_force_at_local_point((100, 0))
-        if keys[pg.K_a]:
-            self.shape.body.apply_force_at_local_point((-100, 0))
-
-    def update(self):
-        self.get_keys()
 
 
 class AbstractAgent(metaclass=ABCMeta):
