@@ -92,10 +92,10 @@ class DroneAgent(AbstractAgent):
         self.space = space
         self.__init_body__(position + Vec2d(0, -100))
         self.main_body.apply_impulse_at_local_point(Vec2d(random.random() / 1000, 0))
-        filter = pymunk.ShapeFilter(group=1)
-        self.main_shape.filter = filter
-        self.right_shape.filter = filter
-        self.left_shape.filter = filter
+        filter_ = pymunk.ShapeFilter(group=1)
+        self.main_shape.filter = filter_
+        self.right_shape.filter = filter_
+        self.left_shape.filter = filter_
 
     def __init_body__(self,
                       position: Vec2d):
@@ -134,3 +134,49 @@ class DroneAgent(AbstractAgent):
                           self.main_body, self.main_shape,
                           self.right_body, self.right_shape,
                           self.left_body, self.left_shape)
+
+
+class Shape:
+    shape: _T_shape
+    body: Body
+
+    def __init__(self,
+                 position: Vec2d,
+                 mass: _T_num = 20.0,
+                 friction: _T_num = 0,
+                 color: tuple = (174, 160, 140),
+                 body_type=Body.DYNAMIC):
+        self.body = Body()
+        self.mass = mass
+        self.body.position = position
+        self.pos = position
+        self.friction = friction
+        self.color = color
+        self.body.body_type = body_type
+
+    def __init_defaults__(self):
+        try:
+            self.shape
+        except NameError:
+            raise ValueError("Shape not defined")
+
+        self.shape.friction = self.friction
+        self.shape.color = Color(*self.color)
+        self.shape.mass = self.mass
+
+    def add_to_space(self, space: Space):
+        space.add(self.body, self.shape)
+
+class Rect(Shape):
+    def __init__(self,
+                 position: Vec2d,
+                 w: int,
+                 h: int,
+                 mass: float = 20,
+                 friction: float = 1,
+                 color: tuple = (174, 160, 140),
+                 is_dynamic: bool = True):
+        super().__init__(Vec2d(position.x + w // 2, position.y - h // 2), mass, friction, color,
+                         Body.DYNAMIC if is_dynamic else Body.KINEMATIC)
+        self.shape = _T_poly.create_box(self.body, (w, h))
+        self.__init_defaults__()

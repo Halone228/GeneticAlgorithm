@@ -1,9 +1,12 @@
 from . import AbstractAgentGA, AbstractAgentModel
 from pymunk.vec2d import Vec2d
 from .objects import EquilibriumAgent as default_Agent
+from .objects import Rect
 import pygad
 from simul.settings import *
 import os
+import numpy
+from numpy import array
 
 
 class Equilibrium(AbstractAgentModel):
@@ -61,4 +64,6 @@ class EquilibriumGA(AbstractAgentGA):
                            random_mutation_min_val=-.5,
                            random_mutation_max_val=.5,
                            on_generation=self.on_generations,
-                           save_best_solutions=bool(os.environ.get('save_best')))
+                           save_best_solutions=True,
+                           initial_population=self.initial_population
+                           )

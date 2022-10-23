@@ -1,6 +1,8 @@
 import click
 from simul import start
 import os
+import logging
+logging.basicConfig(filename='base.log')
 
 
 @click.command()

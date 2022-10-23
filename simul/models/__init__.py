@@ -97,16 +97,18 @@ class AbstractAgentGA(metaclass=ABCMeta):
     def on_generations(self,*args):
         self.tqdm.update(1)
         self.manager.app.update_time()
+        if len(self.ga.best_solutions) > self.ga.sol_per_pop*5:
+            self.ga.best_solutions = self.ga.best_solutions[len(self.ga.best_solutions)-self.ga.sol_per_pop:]
 
     def save(self):
         if os.environ.get('save_path', False):
             # self.ga.save(str(os.environ['save_path']))
-            with open(os.environ.get('save_path'), 'wb') as f:
-                pickle.dump(self.ga.population[self.ga.best_solution_generation],f)
+            with open(os.environ.get('save_path')+'.pkl','wb') as f:
+                pickle.dump(self.ga.best_solutions[len(self.ga.best_solutions)-self.sol_per_pop:], f)
 
     def load(self):
         if os.environ.get('load_path', False):
-            with open(os.environ.get('load_path'), 'rb') as f:
+            with open(os.environ.get('load_path')+'.pkl', 'rb') as f:
                 loaded_values = pickle.load(f)
                 self.initial_population = loaded_values
 
