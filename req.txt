@@ -10,7 +10,7 @@ Pillow==9.2.0
 pycparser==2.21
 pygad==2.18.1
 pygame==2.1.2
-pymunk==6.2.0
+pymunk=~6.2.1
 pyparsing==3.0.9
 python-dateutil==2.8.2
 six==1.16.0
