@@ -76,11 +76,11 @@ class App:
 
     def build_texts(self):
         generation = self.work_font.render(f"Generation: {self.generation}",False,(255,255,255))
-        self.window.blit(generation,(50,50))
+        self.window.blit(generation,(15,5))
         speed = self.work_font.render(f"Speed: x{self.speed}",False,(255,255,255))
-        self.window.blit(speed,(500,50))
+        self.window.blit(speed,(WIDTH/2-70,5))
         time_text = self.work_font.render(f"current:{self.genStartTime:.2f} max:{self.maxDeltaTime:.2f}", False, (255, 254, 254, .7))
-        self.window.blit(time_text, (50, 670))
+        self.window.blit(time_text, (15, HEIGHT-50))
 
     #time
     def time_step(self):
