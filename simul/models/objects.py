@@ -46,10 +46,11 @@ class EquilibriumAgent(AbstractAgent):
 
     def __init_body__(self,
                       position: Vec2d):
-        self.down_rect = Body(body_type=Body.KINEMATIC)
+        self.down_rect = Body(body_type=Body.DYNAMIC)
         self.down_rect.position = position
         self.down_shape = _T_poly.create_box(self.down_rect, (100, 40))
         self.down_shape.friction = 0.5
+        self.down_shape.mass = 1
         self.down_shape.color = Color(102, 102, 153)
         self.up_rect = Body()
         up_rect_height = 500

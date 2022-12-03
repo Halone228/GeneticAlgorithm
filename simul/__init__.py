@@ -21,7 +21,6 @@ class NoSuchModel(Exception):
 
 class App:
     is_running = True
-    objects = []
     __speed = 1
     k_left: bool = False
     k_right: bool = False

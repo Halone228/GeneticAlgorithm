@@ -1,1 +1,1 @@
-python .\main.py drone_model --gs=y
+python ./main.py drone_model --gs=y

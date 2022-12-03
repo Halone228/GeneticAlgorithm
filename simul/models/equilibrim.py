@@ -1,3 +1,5 @@
+import math
+
 from . import AbstractAgentGA, AbstractAgentModel
 from pymunk.vec2d import Vec2d
 from .objects import EquilibriumAgent as default_Agent
@@ -24,9 +26,10 @@ class Equilibrium(AbstractAgentModel):
     def step(self):
         if not self.is_died:
             position = (4*self.agent.position-2*WIDTH)/WIDTH
-            inputs = array([self.agent.angel * numpy.pi, position])
-            force = Vec2d(sum(inputs * self.weights), 0)*70
-            self.agent.down_rect.velocity = force
+            velocity = (4*self.agent.velocity_x-2*WIDTH)/WIDTH
+            inputs = array([math.degrees(self.agent.angel), position, velocity])
+            force = Vec2d(sum(inputs * self.weights), 0)
+            self.agent.down_rect.apply_impulse_at_local_point(force)
             self.fitness += 1 / FPS
             self.died_func()
             if self.fitness > 1000:
@@ -46,7 +49,7 @@ class EquilibriumGA(AbstractAgentGA):
                            num_parents_mating=self.num_parents_mating,
                            fitness_func=self.fitness_func,
                            sol_per_pop=self.sol_per_pop,
-                           num_genes=2,
+                           num_genes=3,
                            init_range_low=self.init_range_low,
                            init_range_high=self.init_range_high,
                            parent_selection_type=self.parent_selection_type,
@@ -60,10 +63,8 @@ class EquilibriumGA(AbstractAgentGA):
                            on_fitness=self.on_fitness,
                            mutation_by_replacement=True,
                            allow_duplicate_genes=True,
-                           keep_elitism=0,
                            random_mutation_min_val=-.5,
                            random_mutation_max_val=.5,
                            on_generation=self.on_generations,
-                           save_best_solutions=True,
                            initial_population=self.initial_population
                            )

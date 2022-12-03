@@ -9,7 +9,8 @@ import os
 
 
 def activation(n):
-    return 1/(1+numpy.exp(-n))
+    ans = 1/(1+numpy.exp(-n))
+    return ans if ans>1e-4 else 0
 
 
 class Drone(AbstractAgentModel):
@@ -71,10 +72,8 @@ class DroneGA(AbstractAgentGA):
             on_fitness=self.on_fitness,
             mutation_by_replacement=True,
             allow_duplicate_genes=True,
-            keep_elitism=5,
             random_mutation_min_val=-.5,
             random_mutation_max_val=.5,
             on_generation=self.on_generations,
-            save_best_solutions=True,
             initial_population=self.initial_population
         )

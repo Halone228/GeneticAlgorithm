@@ -54,12 +54,12 @@ class AbstractAgentGA(metaclass=ABCMeta):
     ga: pygad.GA
     # Class have GA variables, for specific model it can be different
     num_generations = 10000
-    num_parents_mating = 5
+    num_parents_mating = 2
     sol_per_pop = 40
     init_range_low = -3
     init_range_high = 3
     parent_selection_type = "rws"
-    keep_parents = 1
+    keep_parents = -1
     crossover_type = "uniform"
     mutation_type = "random"
     mutation_percent_genes = 8
@@ -85,11 +85,12 @@ class AbstractAgentGA(metaclass=ABCMeta):
 
     def start_ga(self):
         self.ga.run()
-        self.save()
+        # self.save()
+        # self.ga.save('eq.pkl')
 
     def __init__(self,
                  manager):
-        self.load()
+        # self.load()
         self.init_logic()
         self.manager = manager
         self.tqdm = tqdm(total=self.num_generations)
@@ -100,17 +101,17 @@ class AbstractAgentGA(metaclass=ABCMeta):
         if len(self.ga.best_solutions) > self.ga.sol_per_pop*5:
             self.ga.best_solutions = self.ga.best_solutions[len(self.ga.best_solutions)-self.ga.sol_per_pop:]
 
-    def save(self):
-        if os.environ.get('save_path', False):
-            # self.ga.save(str(os.environ['save_path']))
-            with open(os.environ.get('save_path')+'.pkl','wb') as f:
-                pickle.dump(self.ga.best_solutions[len(self.ga.best_solutions)-self.sol_per_pop:], f)
-
-    def load(self):
-        if os.environ.get('load_path', False):
-            with open(os.environ.get('load_path')+'.pkl', 'rb') as f:
-                loaded_values = pickle.load(f)
-                self.initial_population = loaded_values
+    # def save(self):
+    #     if os.environ.get('save_path', False):
+    #         # self.ga.save(str(os.environ['save_path']))
+    #         with open(os.environ.get('save_path')+'.pkl','wb') as f:
+    #             pickle.dump(self.ga.best_solutions[len(self.ga.best_solutions)-self.sol_per_pop:], f)
+    #
+    # def load(self):
+    #     if os.environ.get('load_path', False):
+    #         with open(os.environ.get('load_path')+'.pkl', 'rb') as f:
+    #             loaded_values = pickle.load(f)
+    #             self.initial_population = loaded_values
 
 
 from .equilibrim import Equilibrium, EquilibriumGA
