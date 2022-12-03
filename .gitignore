@@ -1,2 +1,5 @@
 .idea
 base.log
+
+base/__pycache__
+simul/__pycache__

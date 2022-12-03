@@ -21,9 +21,10 @@ class Drone(AbstractAgentModel):
 
     def died_func(self):
         pos = self.agent.main_body.position
-        pos = Vec2d(pos.x // WIDTH, pos.y // HEIGHT)
-        self.is_died = (pos.x != 0 or pos.y != 0 or pos.y < 0)
-
+        self.is_died = (pos.x > WIDTH or pos.x < 0 or pos.y < 0 or pos.y > HEIGHT) 
+        if self.is_died:
+            del self.agent
+            
     def step(self):
         if not self.is_died:
             inputs = array([self.agent.left_body.angle,
