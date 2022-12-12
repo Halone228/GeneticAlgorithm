@@ -6,6 +6,10 @@ from tqdm import tqdm
 import pygad
 from numpy import array
 from pymunk import Space
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+import matplotlib
 
 
 class AbstractAgentModel(metaclass=ABCMeta):
@@ -54,7 +58,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     ga: pygad.GA
     # Class have GA variables, for specific model it can be different
     num_generations = 10000
-    num_parents_mating = 2
+    num_parents_mating = 8
     sol_per_pop = 40
     init_range_low = -3
     init_range_high = 3
@@ -94,10 +98,22 @@ class AbstractAgentGA(metaclass=ABCMeta):
         self.init_logic()
         self.manager = manager
         self.tqdm = tqdm(total=self.num_generations)
+        if os.environ['plot']:
+            self.fig: Figure = matplotlib.pyplot.figure()
+            matplotlib.pyplot.show(block=False)
 
     def on_generations(self,*args):
         self.tqdm.update(1)
         self.manager.app.update_time()
+        if self.ga.generations_completed > 1 and os.environ['plot']:
+            font_size = 14
+            matplotlib.pyplot.title('Fitness/Generation', fontsize=font_size)
+            matplotlib.pyplot.xlabel("Generation", fontsize=font_size)
+            matplotlib.pyplot.ylabel("Fitness", fontsize=font_size)
+            matplotlib.pyplot.draw()
+            matplotlib.pyplot.pause(0.001)
+            matplotlib.pyplot.plot(self.ga.best_solutions_fitness, linewidth=3, color="#3870FF")
+            # matplotlib.pyplot.savefig(fname='plot.png',bbox_inches='tight')
         if len(self.ga.best_solutions) > self.ga.sol_per_pop*5:
             self.ga.best_solutions = self.ga.best_solutions[len(self.ga.best_solutions)-self.ga.sol_per_pop:]
 
