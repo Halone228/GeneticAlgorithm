@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "geneticalgorithm"
+version = "0.1.0"
+description = ""
+authors = ["Halone", "Readykkk"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+numpy = "1.22.2"
+python = "^3.10"
+pygame = "^2.1.2"
+click = "^8.1.3"
+pillow = "^9.4.0"
+pygad = "^2.18.1"
+tqdm = "^4.64.1"
+pymunk = "^6.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
