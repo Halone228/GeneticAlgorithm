@@ -10,6 +10,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 import matplotlib
+import threading
+import _thread as thread
 
 
 class AbstractAgentModel(metaclass=ABCMeta):
@@ -69,7 +71,7 @@ class AbstractAgentGA(metaclass=ABCMeta):
     crossover_type = "uniform"
     mutation_type = "random"
     mutation_percent_genes = 8
-    initial_population = None
+    initial_population = 20
 
     def on_fitness(self, gad: pygad.GA, *args):
         self.manager.objects = [self.manager.model(num, weights, self.manager.space) for num, weights in
@@ -102,19 +104,21 @@ class AbstractAgentGA(metaclass=ABCMeta):
         self.tqdm = tqdm(total=self.num_generations)
         if os.environ['plot']:
             self.fig: Figure = matplotlib.pyplot.figure()
-            matplotlib.pyplot.show(block=False)
+            matplotlib.pyplot.show(block=False)             
 
     def on_generations(self,*args):
         self.tqdm.update(1)
         self.manager.app.update_time()
         if self.ga.generations_completed > 1 and os.environ['plot']:
             font_size = 14
-            matplotlib.pyplot.title('Fitness/Generation', fontsize=font_size)
-            matplotlib.pyplot.xlabel("Generation", fontsize=font_size)
-            matplotlib.pyplot.ylabel("Fitness", fontsize=font_size)
-            matplotlib.pyplot.draw()
-            matplotlib.pyplot.pause(0.001)
-            matplotlib.pyplot.plot(self.ga.best_solutions_fitness, linewidth=3, color="#3870FF")
+            def func():
+                matplotlib.pyplot.title('Fitness/Generation', fontsize=font_size)
+                matplotlib.pyplot.xlabel("Generation", fontsize=font_size)
+                matplotlib.pyplot.ylabel("Fitness", fontsize=font_size)
+                matplotlib.pyplot.draw()
+                matplotlib.pyplot.pause(0.001)
+                matplotlib.pyplot.plot(self.ga.best_solutions_fitness, linewidth=3, color="#3870FF")
+            func()
             # matplotlib.pyplot.savefig(fname='plot.png',bbox_inches='tight')
         if len(self.ga.best_solutions) > self.ga.sol_per_pop*5:
             self.ga.best_solutions = self.ga.best_solutions[len(self.ga.best_solutions)-self.ga.sol_per_pop:]

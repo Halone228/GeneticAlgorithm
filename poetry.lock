@@ -502,6 +502,17 @@ files = [
 ]
 
 [[package]]
+name = "pydispatcher"
+version = "2.0.6"
+description = "Multi-Producer Multi-Consumer Observer Pattern for Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "PyDispatcher-2.0.6.tar.gz", hash = "sha256:3d7e4f43c70000a1dca31f92694e99d0101934fa6eab5d5455a758858d86df95"},
+]
+
+[[package]]
 name = "pygad"
 version = "2.18.1"
 description = "PyGAD: A Python 3 Library for Building the Genetic Algorithm and Training Machine Learning Algoithms (Keras & PyTorch)."
@@ -718,4 +729,4 @@ telegram = ["requests"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2f07b31b045528ed36faad52e46d1185cf4bd177748dd2095ad5038a13738b2e"
+content-hash = "363b9e63642899e6face44c0cb08f6e15b88cb43bbb8da064f7503221e5396c0"

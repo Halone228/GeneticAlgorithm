@@ -39,7 +39,7 @@ class EquilibriumAgent(AbstractAgent):
         self.space = space
         self.__init_body__(position)
         self.joint.collide_bodies = False
-        self.up_rect.apply_impulse_at_local_point(Vec2d(random.random() / 1000, 0))
+        self.up_rect.apply_impulse_at_local_point(Vec2d(random.random() / 100, 0))
         filter = pymunk.ShapeFilter(group=1)
         self.down_shape.filter = filter
         self.up_shape.filter = filter
@@ -79,6 +79,10 @@ class EquilibriumAgent(AbstractAgent):
     @property
     def position(self):
         return self.down_rect.position.x
+
+    @property
+    def center_delta(self):
+        return self.down_rect.position.x - self.up_rect.position.x
 
     def __del__(self):
         self.space.remove(self.down_rect,
